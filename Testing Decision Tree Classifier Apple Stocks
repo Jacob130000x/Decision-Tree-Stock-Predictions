@@ -1,0 +1,66 @@
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+import pandas as pd
+import datetime
+import time
+import io
+clf = DecisionTreeClassifier()
+Correct = 0
+Wrong = 0
+
+#reading CSV with closing prices close price, adjusted close price
+dfStock1 = pd.read_csv('out.csv') 
+#working out whether the price has gone up or down
+dfStock1['Price_Up'] = np.where(dfStock1['Close'].shift(-1) > dfStock1['Close'], 1, 0)
+
+max = len(dfStock1)
+
+#set the range of data which will iterate up 
+minRange = 0
+maxRange = 10
+XYminTrain = 0
+XYmaxTrain = 9
+XYminTest = 9
+XYmaxTest = 10
+
+#number of items used in the range
+items = 10
+
+#working out number of iterations based on the number of items in range minus the length of the dataframe
+iterations = max - items
+
+
+for i in range(iterations):
+  dfStock = dfStock1[minRange:maxRange]
+    
+  #splitting data into X - prices Y - up or down
+  X = dfStock.iloc[:, 0: dfStock.shape[1]-1].values
+  Y = dfStock.iloc[:, dfStock.shape[1]-1].values
+  X_train = X[XYminTrain:XYmaxTrain]
+  X_test = X[XYminTest:XYmaxTest]
+  Y_train = Y[XYminTrain:XYmaxTrain]
+  Y_test = Y[XYminTest:XYmaxTest]
+
+
+
+  X_train = np.nan_to_num(X_train)
+  X_test = np.nan_to_num(X_test)
+  Y_train = np.nan_to_num(Y_train)
+  Y_test = np.nan_to_num(Y_test)
+    
+    #fitting the data
+  tree= clf.fit(X_train, Y_train)
+  tree_predictions = tree.predict(X_test)
+  tree_score = tree.score(X_test, Y_test)
+    
+  print('Actual value ' , Y_test , ' & ' 'Predicted Value ' , tree_predictions , ' & ' "tree_score " , tree_score) 
+
+  if tree_score == 1.0:
+    Correct +=1
+  elif tree_score == 0 :
+    Wrong +=1
+  minRange += 1
+  maxRange += 1
+  print('Correct', Correct)
+  print('Wrong', Wrong)
