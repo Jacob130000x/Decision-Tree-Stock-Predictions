@@ -35,7 +35,7 @@ for i in range(iterations):
   dfStock = dfStock1[minRange:maxRange]
     
   #splitting data into X - prices Y - up or down
-  X = dfStock.iloc[:, 0: dfStock.shape[1]-1].values
+  Xy = dfStock.iloc[:, 0: dfStock.shape[1]-1].values
   Y = dfStock.iloc[:, dfStock.shape[1]-1].values
   X_train = X[XYminTrain:XYmaxTrain]
   X_test = X[XYminTest:XYmaxTest]
